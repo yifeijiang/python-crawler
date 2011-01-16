@@ -22,7 +22,7 @@ class Crawler():
         self.duplcheck.add_urls(new_links)
         self.queue.push_urls(new_links)
             
-    def start(self):
+    def start(self, url_patterns= []):
         while 1:
             url = self.queue.pop_url()
             print url
@@ -34,7 +34,7 @@ class Crawler():
             if html !=None:
                 self.webpage = WebPage(url,html)
                 self.webpage.parse_links()
-                links = self.webpage.filter_links(tags = ['a'], str_patterns= ['^(http://.+livejournal\.com)(.+)$'])
+                links = self.webpage.filter_links(tags = ['a'], str_patterns= url_patterns)
                 self.add_seeds(links)
             self.mysleep(3)        
 
@@ -48,4 +48,4 @@ class Crawler():
 if __name__ == "__main__":
     mycrawler = Crawler()
     mycrawler.add_seeds(['http://www.livejournal.com/'])
-    mycrawler.start()
+    mycrawler.start(['^(http://.+livejournal\.com)(.+)$'])
