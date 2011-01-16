@@ -1,12 +1,15 @@
 import urllib2
-import urllib
+#import urllib
 import cookielib
 import socket
+import lxml.html    # python-lxml # http://codespeak.net/lxml/lxmlhtml.html
+import time
 
 SOCKET_DEFAULT_TIMEOUT = 30
 
-class Downloader:
-    def __init__(cookie = None, timeout = None):
+class DownloadManager:
+
+    def __init__(self, cookie = None, timeout = None):
         # cookie
         if cookie == None:
             self.cookie = cookielib.LWPCookieJar() 
@@ -18,66 +21,83 @@ class Downloader:
         if timeout == None:
             timeout = SOCKET_DEFAULT_TIMEOUT
             socket.setdefaulttimeout(timeout)
+                
+    def clean_cookie(self):
+        pass
         
+    def download(self, url, data = None):  #download the html page from server. 
 
-    ############################################
-    #     download the html page from server. 
-    ############################################
-    def download(self, data=None):
+        redirected_url = None
+        error_msg = None
+        page = None
         # 1. URL Request Head
         user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         headers = { 'User-Agent' : user_agent }
         if data != None:
-            req = urllib2.Request(self.url, urllib.urlencode(data), headers)
+            req = urllib2.Request(url, urllib.urlencode(data), headers)
         else:
-            req = urllib2.Request(self.url, data, headers)
+            req = urllib2.Request(url, data, headers)
         # 2. URL Request
         try:
             response = urllib2.urlopen(req)
-            self.download = 'url-opened'
         except urllib2.URLError, e:
             if hasattr(e, 'reason'):
                 #raise HtmlPageError('[fetch] failed to reach a server.' + \
                 #            ' Reason: '+ str(e.reason) )
-                self.download = 'network-error'
+                error_msg = 'network-error'
             elif hasattr(e, 'code'):
                 #raise HtmlPageError('[fetch] server couldn\'t fulfill the request.'+\
                 #            ' Error code: '+ str(e.code) )
-                self.download = 'server-error'
+                error_msg = 'server-error'
             else:
                 #raise HtmlPageError('[fetch] URLError, unknown reason.')
-                self.download = 'other-error'
+                error_msg = 'other-error'
         except KeyboardInterrupt:
             raise
         except:
             #raise HtmlPageError('[fetch] Unexpected urlopen() error: ' + 
             #            str(sys.exc_info()[0]) )
-            self.download = 'urlopen-error'
+            error_msg = 'urlopen-error'
         
         # 3. Read Html 
         try:
-            the_page = response.read()
-            self.download = True
+            page = response.read()
         except KeyboardInterrupt:
             raise
         except:
             #raise HtmlPageError('[fetch] Unexpected response.read() error: ' + \
             #            str(sys.exc_info()[0]) )
-            self.download = 'reading-error'
+            error_msg = 'reading-error'
 
         # 4. check if there is a redirect
-        if self.download !=True:
-            f = open("undownload.dat", 'a')
-            f.write(time.strftime("%Y/%m/%d %H:%M:%S") + "\t" + self.download + "\t" + self.url + "\n")
+        if error_msg != None:
+            f = open("undownloaded_urls.log", 'a')
+            f.write(time.strftime("%Y/%m/%d %H:%M:%S") + "\t" + error_msg + "\t" + url + "\n")
             f.close()
-            return self.download
 
         nurl = response.geturl()
-        if self.url != nurl:
-            self.url_redirect = nurl
+        if url != nurl:
+            redirected_url = nurl
         else:
-            self.url_redirect = None            
+            redirected_url = None            
         
         # 5. generate lxml.html object for future processing
-        self.html = lxml.html.fromstring(the_page)
-        return True
+        #self.html = lxml.html.fromstring(the_page)
+        return error_msg, url, redirected_url, page
+
+    def lxml_download(self, url):
+        redirected_url = None
+        error_msg = None
+        page = None
+        try:
+            doc = lxml.html.parse(url).getroot()
+            page = lxml.html.tostring(doc)
+        except:
+            error_msg = "lxml error"
+        return error_msg, url, redirected_url, page
+
+if __name__ == "__main__":
+    url = "http://www.cs.colorado.edu/"
+    downloader = DownloadManager()
+    print downloader.download(url)
+    

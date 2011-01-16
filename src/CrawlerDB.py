@@ -1,9 +1,32 @@
-import bsddb     # python-bsddb3
+import bsddb     # python-bsddb3 #http://pybsddb.sourceforge.net/bsddb3.html  # http://pybsddb.sourceforge.net/reftoc.html
+
 class CrawlerDB:
-    pass
+    def __init__(self, db_file):
+        self.database_file = db_file
+        self.database = bsddb.db.DB(None,0)
+
+    def 
 
 class QueueDB( CrawlerDB ):
-    pass
+    
+    def __init__(self, db_file):
+        CrawlerDB.__init(self, dbfile)
+        self.database.set_re_len( 512 )
+        self.database.open( self.database_file, 
+                            dbname = None, 
+                            dbtype = bsddb.db.DB_QUEUE,
+                            flags  = bsddb.db.DB_CREATE,
+                            mode   = 0,
+                            txn    = None, )
+    
+    def pop_url(self):
+        url = self.database.consume()
+        url.strip()
+        return url
+
+    def push_urls(self, url_list)
+        for url in url_list:
+            self.database.append( url )
 
 class WebpageDB( CrawlerDB ):
     pass
@@ -35,7 +58,7 @@ class bdb:
                 self.BDB.set_cachesize(0,536870912)
             self.BDB.open(file,dbname=None,dbtype=bsddb.db.DB_BTREE,flags=bsddb.db.DB_CREATE,mode=0,txn=None)
         elif type == 'DB_QUEUE':
-            self.BDB.set_re_len(256)
+            self.BDB.set_re_len(1024)
             self.BDB.open(file,dbname=None,dbtype=bsddb.db.DB_QUEUE,flags=bsddb.db.DB_CREATE,mode=0,txn=None)
         elif type == 'DB_RECNO':
             self.BDB.open(file,dbname=None,dbtype=bsddb.db.DB_RECNO,flags=bsddb.db.DB_CREATE,mode=0,txn=None)

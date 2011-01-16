@@ -14,10 +14,11 @@ class WebPage:
             self.html = lxml.html.fromstring(htmlsrc)
         self.hyperlinks = {}
         self.filterlinks = []
-        self.download = None
+        #self.download = None
 
 
-    
+
+
     #######################################
     # parsing links from html page
     #######################################
@@ -145,3 +146,18 @@ class WebPage:
         #return the_page
         url = response.geturl()
         return url
+
+if __name__ == "__main__":
+    from download_manager import DownloadManager
+    url = "http://kaixin001.com/"
+    page = WebPage(url)
+    page.download()
+    print page.doc.forms[0].action
+
+    for k,v in page.doc.forms[0].fields.items():
+        print k,v
+        #print lxml.html.tostring( self.doc )
+
+    #print page.doc.forms
+    #for k,v in page.doc.forms.items():
+    #    print k,v
