@@ -28,11 +28,40 @@ class QueueDB( CrawlerDB ):
         for url in url_list:
             self.database.append( url )
 
+    #######################################
+    # save links to database
+    #######################################
+    
+    def pushlinks(links, queuedb, seendb, ):
+        for link in links:
+            sval = seendb.get(link)
+            if sval==None:
+                seendb.put(link,"")
+                queuedb.append(link)
+
+        if self.url_redirect != None:        
+            seendb.put(self.url_redirect,"")
+
+
 class WebpageDB( CrawlerDB ):
-    pass
+    #######################################
+    # save html code to database
+    #######################################
+    def html2bdb(self,url, htmldb):
+        #value = htmldb.get(self.url)
+        if self.url_redirect == None:
+            htmldb.put(url,lxml.html.tostring(self.html))
+        else:
+            pass
+            #htmldb.put(url, self.url_redirect)
+            #htmldb.put(self.url_redirect, lxml.html.tostring(self.html))
+
 
 class DuplCheckDB( CrawlerDB ):
-    pass
+    
+    def dupl_check(self, url_list):
+        unique_urls = []
+        
 
 class MySqlDB:
     pass

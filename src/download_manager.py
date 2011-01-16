@@ -1,5 +1,5 @@
 import urllib2
-#import urllib
+import urllib
 import cookielib
 import socket
 import lxml.html    # python-lxml # http://codespeak.net/lxml/lxmlhtml.html
@@ -23,13 +23,13 @@ class DownloadManager:
             socket.setdefaulttimeout(timeout)
                 
     def clean_cookie(self):
-        pass
+        self.cookie = cookielib.LWPCookieJar() 
         
     def download(self, url, data = None):  #download the html page from server. 
 
         redirected_url = None
         error_msg = None
-        page = None
+        html = None
         # 1. URL Request Head
         user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
         headers = { 'User-Agent' : user_agent }
@@ -61,7 +61,7 @@ class DownloadManager:
         
         # 3. Read Html 
         try:
-            page = response.read()
+            html = response.read()
         except KeyboardInterrupt:
             raise
         except:
@@ -83,19 +83,19 @@ class DownloadManager:
         
         # 5. generate lxml.html object for future processing
         #self.html = lxml.html.fromstring(the_page)
-        return error_msg, url, redirected_url, page
-
+        return error_msg, url, redirected_url, html
+    """
     def lxml_download(self, url):
         redirected_url = None
         error_msg = None
-        page = None
+        html = None
         try:
             doc = lxml.html.parse(url).getroot()
-            page = lxml.html.tostring(doc)
+            html = lxml.html.tostring(doc)
         except:
             error_msg = "lxml error"
-        return error_msg, url, redirected_url, page
-
+        return error_msg, url, redirected_url, html
+    """
 if __name__ == "__main__":
     url = "http://www.cs.colorado.edu/"
     downloader = DownloadManager()
