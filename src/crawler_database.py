@@ -55,8 +55,8 @@ class CrawlerDB:
 
 class QueueDB( CrawlerDB ):
     
-    def __init__(self, db_file):
-        CrawlerDB.__init(self, dbfile)
+    def __init__(self, dbfile):
+        CrawlerDB.__init__(self, dbfile)
         self.database.set_re_len( 512 )
         self.database.open( self.database_file, 
                             dbname = None, 
@@ -67,7 +67,9 @@ class QueueDB( CrawlerDB ):
     
     def pop_url(self):
         url = self.database.consume()
-        url.strip()
+        if url == None:
+            return url
+        url = url[1].strip()
         return url
 
     def push_urls(self, url_list):
@@ -77,9 +79,9 @@ class QueueDB( CrawlerDB ):
 
 class WebpageDB( CrawlerDB ):
     
-    def __init__(self, db_file):
-        CrawlerDB.__init(self, dbfile)
-        self.BDB.open(  self.database_file, 
+    def __init__(self, dbfile):
+        CrawlerDB.__init__(self, dbfile)
+        self.database.open(  self.database_file, 
                         dbname=None,
                         dbtype=bsddb.db.DB_HASH,
                         flags=bsddb.db.DB_CREATE,
@@ -91,9 +93,9 @@ class WebpageDB( CrawlerDB ):
 
 
 class DuplCheckDB( CrawlerDB ):
-    def __init__(self, db_file):
-        CrawlerDB.__init(self, dbfile)
-        self.BDB.open(  self.database_file, 
+    def __init__(self, dbfile):
+        CrawlerDB.__init__(self, dbfile)
+        self.database.open(  self.database_file, 
                         dbname=None,
                         dbtype=bsddb.db.DB_HASH,
                         flags=bsddb.db.DB_CREATE,
@@ -109,7 +111,7 @@ class DuplCheckDB( CrawlerDB ):
     
     def add_urls(self, url_list):
         for url in url_list:
-            self.database.insert(url, "")
+            self.insert(url, "")
         return True
 
 #import MySQLdb
@@ -135,5 +137,5 @@ class MySqlDB:
         return self.cr.fetchall()
 
 
-if __name__ = "__main__":
+if __name__ == "__main__":
     pass

@@ -60,6 +60,8 @@ class DownloadManager:
             error_msg = 'urlopen-error'
         
         # 3. Read Html 
+        if error_msg != None:
+            return error_msg, url, redirected_url, html
         try:
             html = response.read()
         except KeyboardInterrupt:
@@ -74,6 +76,7 @@ class DownloadManager:
             f = open("undownloaded_urls.log", 'a')
             f.write(time.strftime("%Y/%m/%d %H:%M:%S") + "\t" + error_msg + "\t" + url + "\n")
             f.close()
+            return error_msg, url, redirected_url, html
 
         nurl = response.geturl()
         if url != nurl:
