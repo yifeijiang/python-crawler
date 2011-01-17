@@ -18,8 +18,9 @@ Untar the source distribution and run:
 
 ==using the module==
 
-import pycrawlerlib 
+import crawler.crawler
+
 
 == examples==
 
-see pycrawlerllib_test.py
+
