@@ -72,7 +72,7 @@ class WebPage:
     
 if __name__ == "__main__":
     import time
-    from download_manager import DownloadManager
+    from downloader import DownloadManager
     downloader = DownloadManager()
 
     url = "http://www.cs.colorado.edu/"

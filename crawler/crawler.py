@@ -1,8 +1,8 @@
 import sys
 import re
 import time
-from crawler_database import QueueDB, WebpageDB, DuplCheckDB
-from download_manager import DownloadManager
+from database import QueueDB, WebpageDB, DuplCheckDB
+from downloader import DownloadManager
 from webpage import WebPage
 
 class Crawler():
