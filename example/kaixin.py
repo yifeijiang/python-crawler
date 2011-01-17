@@ -60,11 +60,14 @@ def sell(goodsid, num):
     want = re.search(re.compile('[0-9]+'),raw)
     wants =  want.group(0)
     
+    if int(wants) == 0:
+        return False    
     # prepare request data
     url, data = page.get_form(0)
     ndata = {}
     ndata['stallid'] = data['stallid']
     ndata['goodsid'] = goodsid
+
     if int(num) > int(wants):
         ndata['num'] = str(wants)
     else:
@@ -72,7 +75,8 @@ def sell(goodsid, num):
 
     #submit sell request
     error_msg, url, redirected_url, html = downloader.download(url, ndata)
-
+    print "start selling....", time.ctime()
+    return True
 
     
 def check_price():
@@ -123,7 +127,7 @@ if __name__== "__main__":
         gid, price, num = get_buy_info()
         if price > 0 :
             sell(gid, num)
-            print "start selling...." 
+            
         s = random.randint(5,10)*60
         time.sleep(s)
 
