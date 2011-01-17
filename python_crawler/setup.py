@@ -1,13 +1,13 @@
 #from distutils.core import setup
 
-__version__ = '0.1.2'
+__version__ = '0.1.0'
 
 
 METADATA = dict(
-    name = 'pycrawlerlib',
+    name = 'python-crawler',
     version = __version__,
     py_modules = ['pycrawlerlib'],
-    description = 'Python module for web crawler',
+    description = 'Python  web crawler',
     long_description = '',
     license='Apache License 2.0',
     author = 'Yifei Jiang',
