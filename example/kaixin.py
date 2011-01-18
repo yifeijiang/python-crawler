@@ -25,9 +25,6 @@ def login(user, pwd):
 
     url = "http://kaixin001.com/"
     error_msg, url, redirected_url, html = download(url)
-    #print error_msg, url, redirected_url, len(html)
-    time.sleep(2)
-
 
     page = WebPage(url, html)
     action, fields = page.get_form(0)
@@ -37,8 +34,7 @@ def login(user, pwd):
 
     url = 'http://www.kaixin001.com/login/login.php'
     error_msg, url, redirected_url, html = download(url , fields)
-    print error_msg, url, redirected_url, len(html)
-    time.sleep(2)
+    #print error_msg, url, redirected_url, len(html)
     if redirected_url.count('?uid=') >0:
         return True
     else:
@@ -106,9 +102,9 @@ def download(url, data = None):
     ##################################################################
 def check_price():
     current_prices = {}
-    while 1:
-        url =  "http://www.kaixin001.com/!stall/!dialog/buygoodsfromsys.php"
-        error_msg, url, redirected_url, html = download(url)
+    
+    url =  "http://www.kaixin001.com/!stall/!dialog/buygoodsfromsys.php"
+    error_msg, url, redirected_url, html = download(url)
 
     page = WebPage(url, html)
 
@@ -216,7 +212,10 @@ def set_price(stall_id, goods_id, low_per, high_per):
     page = WebPage(url, html)
     es = page.doc.find_class("nomargin")
     e = es[0].find(".//span")
-    purchase_price =  float(e.text_content())
+    price = e.text_content()
+    if len(price.strip()) == 0:
+        return False
+    purchase_price =  float(price.strip())
     
     url, data = page.get_form(0)
     dic = {}
@@ -242,19 +241,13 @@ def get_account():
 if __name__== "__main__":
     user = sys.argv[1]
     pwd = sys.argv[2]
-    while 1:
-        ret = login(user, pwd)
-        if ret == True:
-            print "login into system"
-            break
-        else:
-            print "login failed, sleep 10 second"
-            time.sleep(10)
-    
+    ret = login(user, pwd)
+    if ret == True:
+        print "login into system"
 
+    ############################################33
     selltimer = 1
     sellcnt = 0
-
     while 1:
         #####SELL#########
         sellcnt += 1
@@ -288,10 +281,10 @@ if __name__== "__main__":
                     elif available < 10:
                         continue
                     else:
-                        num = available
+                        num = int(available)
                     print "buy.......", gid, num, time.ctime()
 
-                    re = buy(gid, num)
+                    ret = buy(gid, num)
 
                 set_price(stallid, gid, 0.3, 0.3)
 
@@ -299,18 +292,16 @@ if __name__== "__main__":
         #####SLEEP########
         time.sleep(60)
 
-"""
-    account = get_account()
-    stallid = str(account['stallid'])
-    cash = int(account['realcash'])
-    print stallid
-    print cash
+
+    """    
+    stallid, cash = get_account()
+    print stallid, cash
     current_price = check_price()
     print current_price
     buyprice2db(stallid, current_price)
-    goods = best_goods(current_price, 200, 1000)
+    
+    goods = best_goods(current_price, 300, 1000)
     print goods
 
+    """
 
-######################################
-"""
