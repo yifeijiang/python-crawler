@@ -47,7 +47,10 @@ def get_buy_info():
     error_msg, url, redirected_url, html = download(url)
 
     sales = json.loads(html)
-    return sales['goods']['goodsid'],sales['goods']['price'], sales['goods']['salenum']
+    if 'price' not in sales['goods']:
+        return 0,0,0
+    else:
+        return sales['goods']['goodsid'],sales['goods']['price'], sales['goods']['salenum']
 
 def sell(goodsid, num):
     url = "http://www.kaixin001.com/!stall/!dialog/salestoregoods.php"
@@ -269,7 +272,7 @@ if __name__== "__main__":
             stallid, cash = get_account()
             current_price = check_price()
             buyprice2db(stallid, current_price)
-            goods = best_goods(current_price, 300, 1000)
+            goods = best_goods(current_price, 100, 500)
             print goods
             for gid in goods:
                 for i in range(3):
