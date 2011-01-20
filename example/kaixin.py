@@ -144,6 +144,7 @@ def buyprice2db(stallid, prices):
             item_prices[gid] = [price]
         kaixindb.insert(key, json.dumps(item_prices))
     else:
+        print val
         item_prices = json.loads(val)
         for gid,price in prices.items():
             if gid in item_prices:
@@ -198,7 +199,10 @@ def buy(goods_id, num):
     ###################################3
     # set num and buy
     page2 = WebPage(url, html)
-    url, data = page2.get_form(0)
+    try:
+        url, data = page2.get_form(0)
+    except:
+        return False # excessed the maxmum purchase per hour
     dic ={}
     for k,v in data.items():
         dic[k] =v
@@ -207,6 +211,15 @@ def buy(goods_id, num):
 
     ######################################
     # set price
+
+def price_ajust(p):
+    sp =  str(p)
+    l = len(sp)
+    if l >2:
+        p= int(p/(10**(l-2)))
+        p = p * (10**(l-2))
+    return p
+
 
 def set_price(stall_id, goods_id, low_per, high_per):
     url = 'http://www.kaixin001.com/!stall/!dialog/changeprice.php?stallid='+stall_id+'&goodsid='+goods_id
@@ -225,8 +238,12 @@ def set_price(stall_id, goods_id, low_per, high_per):
     for k,v in data.items():
         dic[k] = v
     dic['dealsetting'] = '1'
-    dic['minprice'] = str(int(purchase_price* (1.0 + low_per)))
-    dic['idealprice'] = str(int(purchase_price* (1.0 + high_per)))
+    lprice = int(purchase_price* (1.0 + low_per))
+    lprice = price_ajust(lprice)
+    dic['minprice'] = str(lprice)
+    hprice = int(purchase_price* (1.0 + high_per))
+    hprice = price_ajust(hprice)    
+    dic['idealprice'] = str(hprice)
 
     #print url, data.items()
     error_msg, url, redirected_url, html = download(url,dic)
@@ -244,6 +261,9 @@ def get_account():
 if __name__== "__main__":
     user = sys.argv[1]
     pwd = sys.argv[2]
+    buy_low  = int(sys.argv[3])
+    buy_high =  int(sys.argv[4])
+
     ret = login(user, pwd)
     if ret == True:
         print "login into system"
@@ -266,13 +286,13 @@ if __name__== "__main__":
 
         #####BUY######
         m = time.strftime("%M", time.localtime())
-        if m in ["05","35"]:
+        if m in ["09","35"]:
             print "try to buy...", time.ctime()
 
             stallid, cash = get_account()
             current_price = check_price()
             buyprice2db(stallid, current_price)
-            goods = best_goods(current_price, 100, 500)
+            goods = best_goods(current_price, buy_low, buy_high)
             print goods
             for gid in goods:
                 for i in range(3):
@@ -288,6 +308,8 @@ if __name__== "__main__":
                     print "buy.......", gid, num, time.ctime()
 
                     ret = buy(gid, num)
+                    if ret == False:
+                        break
 
                 set_price(stallid, gid, 0.3, 0.3)
 
