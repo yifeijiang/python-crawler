@@ -18,7 +18,7 @@ import sys
 import json
 downloader = DownloadManager()
 item_prices = {}
-kaixindb =  WebpageDB('stall.db')
+
 
 
 def login(user, pwd):
@@ -134,38 +134,46 @@ def check_price():
         #
     return current_prices
 
-def buyprice2db(stallid, prices):
-    key = stallid+"B"
-    val = kaixindb.select( key )
-    #print val
-    if val == None:
-        item_prices = {}
-        for gid,price in prices.items():
-            item_prices[gid] = [price]
-        kaixindb.insert(key, json.dumps(item_prices))
-    else:
-        print val
-        item_prices = json.loads(val)
-        for gid,price in prices.items():
-            if gid in item_prices:
-                if price not in item_prices[gid]:
-                    item_prices[gid].append(price)
-            else:
-                    item_prices[gid] = [price]
-        kaixindb.insert(key, json.dumps(item_prices))
+######################################
+##
+######################################
+def buyprice2db(kaixindb, stallid, prices):
+    #key = stallid+"B"
+    #val = kaixindb.select( key )
+    for gid,price in prices.items():
+        key = str("B"+gid.strip())
+        val = kaixindb.select( key )
+        #
+        if val == None:
+            price_list = [price]
+            kaixindb.insert(key, json.dumps(price_list))
+        else:
+            price_list = json.loads(val)
+            if price not in price_list:
+                price_list.append(price)
+                price_list = sorted(price_list)
+                kaixindb.insert(key, json.dumps(price_list))
+
     kaixindb.database.sync()####
 
-def best_goods(prices, minp, maxp):
-    key = stallid+"B"
-    val = kaixindb.select( key )
-    item_prices = json.loads(val)
+def best_goods(kaixindb, stallid, prices, minp, maxp):
+    #key = stallid+"B"
+    #val = kaixindb.select( key )
+    #item_prices = json.loads(val)
     best = []
     for gid, price in prices.items():
-        if gid not in item_prices:
+        key = str("B"+gid.strip())
+        val = kaixindb.select( key )
+        if val ==None:
             continue
-        mprice = min(item_prices[gid])
-        if len(item_prices[gid])> 10 and price <= mprice and price >= minp and price <= maxp:
-             best.append(gid)
+        price_list = json.loads(val)
+        if len(price_list)> 10 and price > minp and price < maxp:
+            if price in price_list:
+                i = price_list.index(price)
+                if float(i)/float(len(price_list)) <= 0.1:
+                    best.append(gid)
+                    #print price_list
+                    #print price
     return best     
             
 def get_stall_id():
@@ -211,6 +219,26 @@ def buy(goods_id, num):
 
     ######################################
     # set price
+def buy_goods(goods):
+    #print goods
+    for gid in goods:
+        for i in range(5):
+            stallid, cash = get_account()
+            available =  cash/current_price[gid]
+            num = 0 
+            if available > 100:
+                num = 100
+            elif available < 10:
+                continue
+            else:
+                num = int(available)
+            print "BUY", gid, num, time.ctime()
+
+            ret = buy(gid, num)
+            if ret == False:
+                break
+
+        set_price(stallid, gid, 0.3, 0.3)
 
 def price_ajust(p):
     sp =  str(p)
@@ -268,50 +296,38 @@ if __name__== "__main__":
     if ret == True:
         print "login into system"
 
+    kaixindb =  WebpageDB('stall.db')
     ############################################33
     selltimer = 1
     sellcnt = 0
+    init = True
     while 1:
         #####SELL#########
         sellcnt += 1
         if sellcnt >= selltimer:
+            print "================================"
             print "try to sell....", time.ctime()
             gid, price, num = get_buy_info()
             if price > 0 :
                 sell(gid, num)
-                print 'sell........',gid,num, time.ctime()
+                print 'SELL',gid,num, time.ctime()
             selltimer = random.randint(5,10)
             sellcnt = 0            
             print "Done", time.ctime()
 
         #####BUY######
         m = time.strftime("%M", time.localtime())
-        if m in ["09","35"]:
+        if m in ["09","38"] or init == True:
+            init = False
+            print "================================"
             print "try to buy...", time.ctime()
 
             stallid, cash = get_account()
             current_price = check_price()
-            buyprice2db(stallid, current_price)
-            goods = best_goods(current_price, buy_low, buy_high)
+            buyprice2db(kaixindb, stallid, current_price)
+            goods = best_goods(kaixindb, stallid,current_price, buy_low, buy_high)
             print goods
-            for gid in goods:
-                for i in range(3):
-                    stallid, cash = get_account()
-                    available =  cash/current_price[gid]
-                    num = 0 
-                    if available > 100:
-                        num = 100
-                    elif available < 10:
-                        continue
-                    else:
-                        num = int(available)
-                    print "buy.......", gid, num, time.ctime()
-
-                    ret = buy(gid, num)
-                    if ret == False:
-                        break
-
-                set_price(stallid, gid, 0.3, 0.3)
+            buy_goods(goods)
 
             print "done", time.ctime()
         #####SLEEP########
