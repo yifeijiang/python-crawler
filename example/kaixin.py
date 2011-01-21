@@ -206,8 +206,8 @@ def buy(goods_id, num):
 
     ###################################3
     # set num and buy
-    page2 = WebPage(url, html)
     try:
+        page2 = WebPage(url, html)    
         url, data = page2.get_form(0)
     except:
         return False # excessed the maxmum purchase per hour
@@ -219,7 +219,7 @@ def buy(goods_id, num):
 
     ######################################
     # set price
-def buy_goods(goods):
+def buy_goods(goods,current_price):
     #print goods
     for gid in goods:
         for i in range(5):
@@ -327,7 +327,7 @@ if __name__== "__main__":
             buyprice2db(kaixindb, stallid, current_price)
             goods = best_goods(kaixindb, stallid,current_price, buy_low, buy_high)
             print goods
-            buy_goods(goods)
+            buy_goods(goods, current_price)
 
             print "done", time.ctime()
         #####SLEEP########
