@@ -200,10 +200,12 @@ def buy(goods_id, num):
     page = WebPage(url, html)    
     ######################################
     # select goods
-    url, data = page.get_form(0)
-    data['goodsid'] = str(goods_id).strip()
-    error_msg, url, redirected_url, html = download(url,data)
-
+    try:
+        url, data = page.get_form(0)
+        data['goodsid'] = str(goods_id).strip()
+        error_msg, url, redirected_url, html = download(url,data)
+    except:
+        return False
     ###################################3
     # set num and buy
     try:
@@ -238,7 +240,7 @@ def buy_goods(goods,current_price):
             if ret == False:
                 break
 
-        set_price(stallid, gid, 0.3, 0.3)
+        set_price(stallid, gid, 0.2, 0.3)
 
 def price_ajust(p):
     sp =  str(p)
@@ -272,6 +274,8 @@ def set_price(stall_id, goods_id, low_per, high_per):
     hprice = int(purchase_price* (1.0 + high_per))
     hprice = price_ajust(hprice)    
     dic['idealprice'] = str(hprice)
+    dic['higglenum'] = "5"
+
 
     #print url, data.items()
     error_msg, url, redirected_url, html = download(url,dic)
