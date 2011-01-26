@@ -35,7 +35,10 @@ def login(user, pwd):
     url = 'http://www.kaixin001.com/login/login.php'
     error_msg, url, redirected_url, html = download(url , fields)
     #print error_msg, url, redirected_url, len(html)
-    if redirected_url.count('?uid=') >0:
+    if redirected_url == False:
+        return False
+
+    if redirected_url.count('?uid=') > 0:
         return True
     else:
         return False
@@ -300,43 +303,48 @@ if __name__== "__main__":
     if ret == True:
         print "login into system"
 
-    kaixindb =  WebpageDB('stall.db')
+    kaixindb =  WebpageDB(user+'.db')
     ############################################33
     selltimer = 1
     sellcnt = 0
     init = True
-    while 1:
-        #####SELL#########
-        sellcnt += 1
-        if sellcnt >= selltimer:
-            print "================================"
-            print "try to sell....", time.ctime()
-            gid, price, num = get_buy_info()
-            if price > 0 :
-                sell(gid, num)
-                print 'SELL',gid,num, time.ctime()
-            selltimer = random.randint(5,10)
-            sellcnt = 0            
-            print "Done", time.ctime()
+    try:
+        while 1:
+            #####SELL#########
+            sellcnt += 1
+            if sellcnt >= selltimer:
+                print "================================"
+                print "try to sell....", time.ctime()
+                gid, price, num = get_buy_info()
+                if price > 0 :
+                    sell(gid, num)
+                    print 'SELL',gid,num, time.ctime()
+                selltimer = random.randint(5,10)
+                sellcnt = 0            
+                print "Done", time.ctime()
 
-        #####BUY######
-        m = time.strftime("%M", time.localtime())
-        if m in ["09","38"] or init == True:
-            init = False
-            print "================================"
-            print "try to buy...", time.ctime()
+            #####BUY######
+            m = time.strftime("%M", time.localtime())
+            if m in ["09","38"] or init == True:
+                init = False
+                print "================================"
+                print "try to buy...", time.ctime()
 
-            stallid, cash = get_account()
-            current_price = check_price()
-            buyprice2db(kaixindb, stallid, current_price)
-            goods = best_goods(kaixindb, stallid,current_price, buy_low, buy_high)
-            print goods
-            buy_goods(goods, current_price)
+                stallid, cash = get_account()
+                current_price = check_price()
+                buyprice2db(kaixindb, stallid, current_price)
+                goods = best_goods(kaixindb, stallid,current_price, buy_low, buy_high)
+                print goods
+                buy_goods(goods, current_price)
 
-            print "done", time.ctime()
-        #####SLEEP########
-        time.sleep(60)
-
+                print "done", time.ctime()
+            #####SLEEP########
+            print 'sleeping....'
+            time.sleep(60)
+            print 'sleeping done!'
+    finally:
+        kaixindb.close()
+        print "DB closed!"
 
     """    
     stallid, cash = get_account()
@@ -347,6 +355,11 @@ if __name__== "__main__":
     
     goods = best_goods(current_price, 300, 1000)
     print goods
+
+====you saved in store
+http://www.kaixin001.com/!stall/!ajax/store.php
+
+http://www.kaixin001.com/!stall/!ajax/account.php
 
     """
 
