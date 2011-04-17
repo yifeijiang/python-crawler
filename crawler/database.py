@@ -37,7 +37,11 @@ class CrawlerDB:
         return val
     
     def delete(self,key):
-        pass
+        try:
+            self.database.delete(key)
+        except:
+            return False
+        return True
 
     def exist(self,key):
         sval = self.database.get(key)
@@ -52,6 +56,8 @@ class CrawlerDB:
     def get_cursor(self):
         return self.database.cursor()
 
+    def sync(self):
+        self.database.sync()
 
 class QueueDB( CrawlerDB ):
     

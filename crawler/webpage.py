@@ -27,17 +27,20 @@ class WebPage:
         return self.links
 
     # filter links
-    def filter_links(self,tags=[],str_patterns=[]):
-        patterns = []
-        for p in str_patterns:
-            patterns.append(re.compile(p))
+    def filter_links(self,tags=[],patterns=[]):
+        #CHANGES Apr 17 2011 START
+        #patterns = []
+        #for p in str_patterns:
+        #    patterns.append(re.compile(p))
+        #CHANGES Apr 17 2011 E N D
         ##
         filterlinks = []
         if len(tags)>0:
             for tag in tags:
                 for link in self.links[tag]:
                     if len(patterns) == 0:
-                        filterlinks.append(link)
+                        pass
+                        #filterlinks.append(link)
                     else:
                         for pattern in patterns:
                             if pattern.match(link)!=None:
@@ -47,7 +50,8 @@ class WebPage:
             for k,v in self.links.items():
                 for link in v:
                     if len(patterns) == 0:
-                        filterlinks.append(link)
+                        pass
+                        #filterlinks.append(link)
                     else:
                         for pattern in patterns:
                             if pattern.match(link)!=None:

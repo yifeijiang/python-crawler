@@ -11,6 +11,7 @@ class Crawler():
         self.downloader = DownloadManager()
         self.webpage = None
         self.init_database()
+        self.rules = {}
 
     def init_database(self):
         self.queue = QueueDB('queue.db')
@@ -21,8 +22,24 @@ class Crawler():
         new_links = self.duplcheck.filter_dupl_urls(links)
         self.duplcheck.add_urls(new_links)
         self.queue.push_urls(new_links)
-            
-    def start(self, url_patterns= []):
+    
+    def add_rules(self, rules):
+        self.rules = {}
+        for url, inurls in rules.items():
+            reurl = re.compile(url)
+            repatn = []
+            for u in inurls:
+                repatn.append(re.compile(u))
+            self.rules[reurl] = repatn
+
+    def get_patterns_from_rules(self,url):
+        patns = []
+        for purl,ru in self.rules.items():
+            if purl.match(url)!= None:
+                patns.extend(ru)
+        return list(set(patns))
+
+    def start(self):
         while 1:
             url = self.queue.pop_url()
             print url
@@ -34,7 +51,9 @@ class Crawler():
             if html !=None:
                 self.webpage = WebPage(url,html)
                 self.webpage.parse_links()
-                links = self.webpage.filter_links(tags = ['a'], str_patterns= url_patterns)
+                ruptn = self.get_patterns_from_rules(url)
+                print ruptn
+                links = self.webpage.filter_links(tags = ['a'], patterns= ruptn)
                 self.add_seeds(links)
             self.mysleep(3)        
 
@@ -48,4 +67,8 @@ class Crawler():
 if __name__ == "__main__":
     mycrawler = Crawler()
     mycrawler.add_seeds(['http://www.livejournal.com/'])
-    mycrawler.start(['^(http://.+livejournal\.com)(.+)$'])
+    rules = {'^(http://.+livejournal\.com)(.+)$':['^(http:)//((?!www).*)(\.livejournal\.com.+)$']}
+    mycrawler.add_rules(rules)
+    mycrawler.start()
+
+
