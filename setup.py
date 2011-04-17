@@ -14,7 +14,7 @@ Distutils setup script for python-crawler module.
 from distutils.core import setup
 
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 setup(name='crawler',
       version=__version__,

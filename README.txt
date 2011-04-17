@@ -23,4 +23,10 @@ import crawler.crawler
 
 == examples==
 
-
+== compile==
+python setup.py sdist
+#python setup.py bdist
+python setup.py bdist_wininst
+python setup.py bdist_rpm
+##need pkg stded
+python setup.py --command-packages=stdeb.command bdist_deb
