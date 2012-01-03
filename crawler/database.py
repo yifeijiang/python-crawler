@@ -95,7 +95,7 @@ class WebpageDB( CrawlerDB ):
                         txn=None, )
 
     def html2db(self,url, html):
-        self.database.insert(url, html)
+        self.insert(url, html)
 
 
 class DuplCheckDB( CrawlerDB ):

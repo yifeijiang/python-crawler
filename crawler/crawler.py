@@ -15,7 +15,7 @@ class Crawler():
 
     def init_database(self):
         self.queue = QueueDB('queue.db')
-        self.webpage = WebpageDB('webpage.db')
+        self.webpagedb = WebpageDB('webpage.db')
         self.duplcheck = DuplCheckDB('duplcheck.db')
     
     def add_seeds(self, links):
@@ -49,6 +49,8 @@ class Crawler():
             error_msg, url, redirected_url, html = self.downloader.download(url)
             #print error_msg, url, redirected_url, html
             if html !=None:
+                self.webpagedb.html2db(url,html)
+                
                 self.webpage = WebPage(url,html)
                 self.webpage.parse_links()
                 ruptn = self.get_patterns_from_rules(url)
