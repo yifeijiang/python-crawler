@@ -14,13 +14,13 @@ Distutils setup script for python-crawler module.
 from distutils.core import setup
 
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 setup(name='crawler',
       version=__version__,
       author='Yifei Jiang',
       author_email='jiangyifei@gmail.com',
-      url='http://crawler.yifeijiang.com/',
+      url='http://code.google.com/p/python-crawler/',
       download_url='http://code.google.com/p/python-crawler/downloads/list',
       description='python crawler.',
       long_description="python crawler.",
