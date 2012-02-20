@@ -5,9 +5,10 @@ from database import QueueDB, WebpageDB, DuplCheckDB
 from downloader import DownloadManager
 from webpage import WebPage
 
-class Crawler():
+class Crawler(object):
 
     def __init__(self ):
+        super(Crawler, self).__init__()
         self.downloader = DownloadManager()
         self.webpage = None
         self.init_database()
@@ -39,6 +40,14 @@ class Crawler():
                 patns.extend(ru)
         return list(set(patns))
 
+    def getlinks(self,url,html):
+        self.webpage = WebPage(url,html)
+        self.webpage.parse_links()
+        ruptn = self.get_patterns_from_rules(url)
+        #print ruptn
+        links = self.webpage.filter_links(tags = ['a'], patterns= ruptn)
+        return links
+        
     def start(self):
         while 1:
             url = self.queue.pop_url()
@@ -50,12 +59,7 @@ class Crawler():
             #print error_msg, url, redirected_url, html
             if html !=None:
                 self.webpagedb.html2db(url,html)
-                
-                self.webpage = WebPage(url,html)
-                self.webpage.parse_links()
-                ruptn = self.get_patterns_from_rules(url)
-                print ruptn
-                links = self.webpage.filter_links(tags = ['a'], patterns= ruptn)
+                links = self.getlinks(url, html)
                 self.add_seeds(links)
             self.mysleep(3)        
 
