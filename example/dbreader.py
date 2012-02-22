@@ -1,5 +1,6 @@
 import bsddb     # python-bsddb3 #http://pybsddb.sourceforge.net/bsddb3.html  #
 import sys 
+
 class DBReader(object):
     def __init__(self, db_file):
         self.database_file = db_file
@@ -15,7 +16,9 @@ class DBReader(object):
 if __name__ == "__main__":
     """
     usage:
-    python dbreader.py dbfile start-of-rec-line end-of-rec-line
+        python dbreader.py dbfile start-of-rec-line end-of-rec-line
+    for example:
+        python webpage.db 1 5
     """
     
                     
@@ -34,9 +37,13 @@ if __name__ == "__main__":
             flag = db_cursor.next()
             if flag != None and cnt >= db_rec_start and cnt <= db_rec_end:
                 print "######### KEY ###########",flag[0]
+                
+                # write each html into a file,
                 f = open(flag[0].split("?id=")[1]+".html", 'w')
                 f.write(flag[1])
                 f.close()
+                
+                # print value
                 #print "@@@@@@@@@ VALUE @@@@@@@@@",flag[1]
             if cnt > db_rec_end:
                 break
