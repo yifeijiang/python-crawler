@@ -13,7 +13,10 @@ class DBReader(object):
         return self.database.cursor()
         
 if __name__ == "__main__":
-    
+    """
+    usage:
+    python dbreader.py dbfile start-of-rec-line end-of-rec-line
+    """
     
                     
     dbfile = str(sys.argv[1])
