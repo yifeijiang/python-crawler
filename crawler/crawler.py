@@ -71,6 +71,7 @@ class Crawler(object):
 
 
 if __name__ == "__main__":
+    
     mycrawler = Crawler()
     mycrawler.add_seeds(['http://www.livejournal.com/'])
     rules = {'^(http://.+livejournal\.com)(.+)$':['^(http:)//((?!www).*)(\.livejournal\.com.+)$']}

@@ -1,0 +1,6 @@
+seed ['http://www.example.com/', 'http://www.example1.com/' ]
+seed ['http://www.example.com/', 'http://www.example1.com/' ]
+rule {'^(http://.+example\.com)(.+)$':[ '^(http://.+example\.com)(.+)$','^(http://.+example\.com)(.+)$' ]}
+rule {'^(http://.+example\.com)(.+)$':[ '^(http://.+example\.com)(.+)$','^(http://.+example\.com)(.+)$' ]}
+
+
