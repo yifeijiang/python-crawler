@@ -6,5 +6,6 @@ rule {'^(http://.+example\.com)(.+)$':[ '^(http://.+example\.com)(.+)$','^(http:
 rule {'^(http://.+example\.com)(.+)$':[ '^(http://.+example\.com)(.+)$','^(http://.+example\.com)(.+)$' ]}
 # urls repeated 
 monitor ['^(http://.+example\.com)(.+)$','^(http://.+example\.com)(.+)$']
-
+#login
+login {}
 
