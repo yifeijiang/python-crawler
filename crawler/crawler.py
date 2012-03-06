@@ -71,11 +71,32 @@ class Crawler(object):
 
 
 if __name__ == "__main__":
-    
+    import json
+    if len(sys.argv) < 2:
+        print "Input Error: python crawler.py config-file-name"
+        sys.exit(0)
+    try:
+        f = open(sys.argv[1],'r')
+    except:
+        print "Can't find file: "+ sys.argv[1];
+        sys.exit(0)
+
     mycrawler = Crawler()
-    mycrawler.add_seeds(['http://www.livejournal.com/'])
-    rules = {'^(http://.+livejournal\.com)(.+)$':['^(http:)//((?!www).*)(\.livejournal\.com.+)$']}
-    mycrawler.add_rules(rules)
+    for line in f:
+        line = line.replace('\n','')
+        if line[0:4] == 'seed':
+            dat = line[4:].strip()
+            print "add seeds: ", dat
+            seed = json.loads(dat)
+            print seed 
+            mycrawler.add_seeds(seed)
+        if line[0:4] == 'rule':
+            dat = line[4:].strip()
+            print "add rules: ", dat
+            rule = json.loads( dat ) 
+            
+            mycrawler.add_rules(rule)
+            
     mycrawler.start()
 
 
