@@ -88,13 +88,13 @@ if __name__ == "__main__":
             dat = line[4:].strip()
             print "add seeds: ", dat
             seed = json.loads(dat)
-            print seed 
+            #print seed
             mycrawler.add_seeds(seed)
         if line[0:4] == 'rule':
             dat = line[4:].strip()
             print "add rules: ", dat
             rule = json.loads( dat ) 
-            
+            #print rule
             mycrawler.add_rules(rule)
             
     mycrawler.start()

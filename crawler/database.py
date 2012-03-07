@@ -28,7 +28,7 @@ class CrawlerDB:
 
     def insert(self,key,val=""):
         try:
-            self.database.put(key,val)
+            self.database.put(str(key),val)
         except:
             raise
 
@@ -111,7 +111,7 @@ class DuplCheckDB( CrawlerDB ):
     def filter_dupl_urls(self, url_list):
         unique_urls = []
         for url in url_list:
-            if self.database.get(url)==None:
+            if self.database.get(str(url))==None:
                 unique_urls.append(url)
         return unique_urls 
     
