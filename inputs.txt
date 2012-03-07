@@ -2,8 +2,8 @@
 seed ["http://www.example.com/", "http://www.example1.com/"]
 seed ["http://www.example.com/", "http://www.example1.com/"]
 # url parsing rule
-rule {"^(http://.+example\.com)(.+)$":[ "^(http://.+example\.com)(.+)$","^(http://.+example\.com)(.+)$" ]}
-rule {"^(http://.+example\.com)(.+)$":[ "^(http://.+example\.com)(.+)$","^(http://.+example\.com)(.+)$" ]}
+rule {"^(http://.+example\\.com)(.+)$":["^(http://.+example\\.com)(.+)$","^(http://.+example\\.com)(.+)$"]}
+rule {"^(http://.+example\\.com)(.+)$":["^(http://.+example\\.com)(.+)$","^(http://.+example\\.com)(.+)$"]}
 # urls repeated 
 rept ["^(http://.+example\.com)(.+)$","^(http://.+example\.com)(.+)$"]
 #login
